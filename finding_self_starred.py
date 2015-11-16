@@ -28,8 +28,16 @@ def get_self_starred_repos(account):
                 repo = dict()
                 repo['name'] = "".join(item.select('.repo-list-name a')[0].text.split())
                 repo['url'] = BASE_URL + item.select('.repo-list-name a')[0]['href']
-                repo['description'] = item.select('.repo-list-description')[0].text.strip()
+                descs = item.select('.repo-list-description')
+                if len(descs) > 0:
+                    repo['description'] = descs[0].text.strip()
+                else:
+                    repo['description'] = 'No description.'
                 repos.append(repo)
+
+                print '=' * 30
+                print repo['name'] + '\n' + repo['description'] + '\n' + repo['url']
+                print '=' * 30 + '\n\n'
 
         paginations = soup.select('.pagination a')
         if len(paginations) == 0:
@@ -43,7 +51,7 @@ def get_self_starred_repos(account):
                 has_next = True
 
         if not has_next:
-                break;
+                break
 
     return repos
 
@@ -52,10 +60,5 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('account', help="Finding one's own repositories which are self-starred.", type=str)
     name = parser.parse_args().account
-    rlt = get_self_starred_repos(name)
-
-    for item in rlt:
-        print '=' * 30
-        print item['name'] + '\n' + item['description'] + '\n' + item['url']
-        print '=' * 30 + '\n\n'
+    get_self_starred_repos(name)
 
